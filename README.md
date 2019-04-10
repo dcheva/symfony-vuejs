@@ -8,13 +8,13 @@ Executing bash inside app service
 ```bash
 $ docker-compose up -d
 $ winpty docker-compose exec app bash
-$ ./install.sh
+$ ./install.sh # -d to delete node modules, symfony vendors and all cache files, logs and sessions
 ```
 - on Linux: 
 ```bash
 $ docker-compose up -d
 $ docker-compose exec app bash
-$ ./install.sh
+$ ./install.sh # -d to delete node modules, symfony vendors and all cache files, logs and sessions
 ```
 Also, update your `hosts` file with:
 
