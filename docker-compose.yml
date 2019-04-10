@@ -26,6 +26,20 @@ services:
     volumes:
       - ./app:/var/www/html:rw
 
+  wordpress:
+    image: wordpress:latest
+    labels:
+      - traefik.enable=true
+      - traefik.backend=app
+      - traefik.frontend.rule=Host:wp.localhost
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./app:/var/www/wordpress:rw
+
   mysql:
     image: mysql:5.7
     environment:
