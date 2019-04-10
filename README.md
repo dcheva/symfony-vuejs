@@ -1,15 +1,21 @@
-Source code of the tutorial [thecodingmachine.io/building-a-single-page-application-with-symfony-4-and-vuejs](https://thecodingmachine.io/building-a-single-page-application-with-symfony-4-and-vuejs).
+Used source: [thecodingmachine.io/building-a-single-page-application-with-symfony-4-and-vuejs](https://thecodingmachine.io/building-a-single-page-application-with-symfony-4-and-vuejs).
 
-# Quick start
+# Install
 
-If you want to try out the project just follow these steps.
-
+To install the project just follow these steps.
+Executing bash inside app service
+- on Windows: use Git Bash
 ```bash
 $ docker-compose up -d
-$ docker-compose exec app bash # executing bash inside app service
+$ winpty docker-compose exec app bash
 $ ./install.sh
 ```
-
+- on Linux: 
+```bash
+$ docker-compose up -d
+$ docker-compose exec app bash
+$ ./install.sh
+```
 Also, update your `hosts` file with:
 
 ```
@@ -19,8 +25,34 @@ Also, update your `hosts` file with:
 ```
 
 You may now go to [http://app.localhost/](http://app.localhost/) and login using the following credentials:  
-Login: `foo`  
-Password: `bar`
+Login: `wpsv`  
+Password: `wpsv`
 
 Wordpress: [http://wp.localhost](http://wp.localhost)  
 PHPMyAdmin: [http://phpadmin.app.localhost](http://phpadmin.app.localhost)  
+
+# Uninstall ALL Docker:
+- First stop them all
+```bash
+docker container stop $(docker container ls -a -q)
+```
+- Containers
+```bash
+docker container rm $(docker container ls -a -q)
+```
+- Images
+```bash
+docker image rm $(docker image ls -a -q)
+```
+- Volumes
+```bash
+docker volume rm $(docker volume ls -q)
+```
+- Networks
+```bash
+docker network rm $(docker network ls -q)
+```
+# Total Uninstall (it will delete ALL Docker files)
+```bash
+docker container stop $(docker container ls -a -q) && docker system prune -a -f --volumes
+```

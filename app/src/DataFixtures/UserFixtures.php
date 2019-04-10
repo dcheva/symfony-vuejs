@@ -15,8 +15,8 @@ final class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $userEntity = new User();
-        $userEntity->setLogin('foo');
-        $userEntity->setPlainPassword('bar');
+        $userEntity->setLogin('wpsv');
+        $userEntity->setPlainPassword('wpsv');
         $userEntity->setRoles(['ROLE_FOO']);
         $manager->persist($userEntity);
         $manager->flush();

@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-
+  # latest but fixed version
   traefik:
     image: traefik:1.7
     command: --docker --docker.exposedbydefault=false
@@ -9,9 +9,9 @@ services:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
+  # due to NodeJS 10 and PHP 7.3
   app:
-    image: thecodingmachine/php:7.2-v2-apache-node10
+    image: thecodingmachine/php:7.3-v2-apache-node10
     labels:
       - traefik.enable=true
       - traefik.backend=app
@@ -22,13 +22,36 @@ services:
       PHP_MEMORY_LIMIT: 1G
       APP_ENV: dev
       APP_SECRET: 8d2a5c935d8ef1c0e2b751147382bc75
-      DATABASE_URL: mysql://foo:bar@mysql:3306/foo
+      DATABASE_URL: mysql://wpsv:wpsv@mysql:3306/wpsv
     volumes:
       - ./app:/var/www/html:rw
-
-# not works... read: https://github.com/Saturate/traefik-wordpress/blob/master/wordpress/docker-compose.yml
+  # not maria due to JSON datatype support
+  # not 8.0 due to doctrine compatibility
+  # using single DB to minimize resources
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: wpsv
+      MYSQL_DATABASE: wpsv
+      MYSQL_USER: wpsv
+      MYSQL_PASSWORD: wpsv
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./services/mysql/utf8mb4.cnf:/etc/mysql/conf.d/utf8mb4.cnf:ro
+  # latest but fixed version
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.8
+    labels:
+      - traefik.enable=true
+      - traefik.backend=phpmyadmin
+      - traefik.frontend.rule=Host:phpadmin.app.localhost
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: wpsv
+      PMA_PASSWORD: wpsv
+  # latest but fixed version
   wordpress:
-    image: wordpress:latest
+    image: wordpress:5.1.1-php7.3-apache
     depends_on:
       - mysql
     labels:
@@ -36,34 +59,11 @@ services:
       - traefik.backend=wp
       - traefik.frontend.rule=Host:wp.localhost
     environment:
-      WORDPRESS_DB_HOST: mysql://foo:bar@mysql:3306/wordpress
-      WORDPRESS_DB_USER: foo
-      WORDPRESS_DB_PASSWORD: bar
-      WORDPRESS_DB_NAME: wordpress
-
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: foo
-      MYSQL_USER: foo
-      MYSQL_PASSWORD: bar
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./services/mysql/utf8mb4.cnf:/etc/mysql/conf.d/utf8mb4.cnf:ro
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:4.7
-    labels:
-      - traefik.enable=true
-      - traefik.backend=phpmyadmin
-      - traefik.frontend.rule=Host:phpadmin.app.localhost
-    environment:
-      PMA_HOST: mysql
-      PMA_USER: foo
-      PMA_PASSWORD: bar
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: wpsv
+      WORDPRESS_DB_PASSWORD: wpsv
+      WORDPRESS_DB_NAME: wpsv
 
 volumes:
-
   mysql_data:
     driver: local
