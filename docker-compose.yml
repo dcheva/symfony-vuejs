@@ -26,19 +26,20 @@ services:
     volumes:
       - ./app:/var/www/html:rw
 
+# not works... read: https://github.com/Saturate/traefik-wordpress/blob/master/wordpress/docker-compose.yml
   wordpress:
     image: wordpress:latest
+    depends_on:
+      - mysql
     labels:
       - traefik.enable=true
-      - traefik.backend=app
+      - traefik.backend=wp
       - traefik.frontend.rule=Host:wp.localhost
     environment:
-      WORDPRESS_DB_HOST: mysql:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_HOST: mysql://foo:bar@mysql:3306/wordpress
+      WORDPRESS_DB_USER: foo
+      WORDPRESS_DB_PASSWORD: bar
       WORDPRESS_DB_NAME: wordpress
-    volumes:
-      - ./app:/var/www/wordpress:rw
 
   mysql:
     image: mysql:5.7
